@@ -460,6 +460,32 @@ The competition winners will be determined **only based on submissions received 
 
 Whenever possible, we recommend communicating with the organizers via GitHub issues so that other participants with similar questions can also see the solutions. If your question cannot be discussed publicly, please contact [Jonathan](mailto:jonathan@feyer.ai), [Laurin](mailto:laurin.sefa@student.uni-tuebingen.de), [Priya](mailto:shanmugapriya.kanagasabapathi@uni-tuebingen.de), [Soham](mailto:soham.basu@uni-tuebingen.de), or [Mario](mailto:mario.krenn@uni-tuebingen.de).
 
+## Scientific Advisory Board
+
+The Scientific Advisory Board (SAB) provides independent advice on unexpected or disputed situations during the competition, including suspected cheating and questions about submission validity. It also reviews entries to identify creative, surprising, or technically innovative approaches that may not rank among the top-scoring solutions, and recommends the recipients of two special prizes of €3,000 each.
+
+![Scientific Advisory Board: Max Dax, Anna Green, Haixing Miao, Stephen Wright, and Rose Yu.](media/01_warm_editorial.png)
+
+- **Max Dax**  
+  ELLIS Institute Tübingen & Max Planck Institute for Intelligent Systems · [Website](https://max-dax.github.io/)  
+  Max develops probabilistic machine-learning methods for scientific discovery, including generative models and simulation-based inference. His work includes rapid and reliable analysis of gravitational-wave signals.
+
+- **Anna Green**  
+  Maastricht University & Nikhef · [Website](https://cris.maastrichtuniversity.nl/en/persons/anna-green/)  
+  Anna works on precision interferometry and optical modelling for gravitational-wave detectors. She is a scientific co-lead of Finesse 3, a simulation tool for understanding and designing interferometers.
+
+- **Haixing Miao**  
+  Tsinghua University · [Website](https://www.phys.tsinghua.edu.cn/phyen/info/1069/1544.htm)  
+  Haixing studies gravitational-wave instrumentation and high-precision quantum measurement. His research explores ways to reduce quantum noise and improve the sensitivity of future detectors.
+
+- **Stephen Wright**  
+  University of Wisconsin–Madison · [Website](https://pages.cs.wisc.edu/~swright/)  
+  Stephen develops the theory, algorithms, and software of numerical optimization, particularly for problems with continuous variables. His work connects optimization with machine learning and data analysis.
+
+- **Rose Yu**  
+  University of California San Diego · [Website](https://roseyu.com/)  
+  Rose develops machine-learning methods for complex spatiotemporal systems and scientific discovery. Her research includes physics-guided deep learning, Bayesian optimization, and active learning.
+
 ## Resources
 
 - **Website:** <https://www.learn2design2026.com/>
