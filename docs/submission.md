@@ -64,6 +64,26 @@ Each participant run is allocated:
 - 40 GiB SSD
 - Ubuntu 22.04 LTS with CUDA 13
 
+### Batched Objective scaling
+
+The benchmark below shows representative scaling of every batched UIFO
+Objective path on one H100. It uses size-3 UIFO problems with 50 frequencies
+and reports the mean and SEM across ten topology seeds. The columns show call
+latency, throughput relative to batch size 1, and remaining GPU-memory
+headroom. The red dotted line marks the first batch size that ran out of GPU
+memory.
+
+<p align="left">
+  <img src="../media/uifo_batch_scaling_all_operations.png" alt="UIFO batch scaling for all Objective functions" width="720">
+</p>
+
+For this representative workload, value-only calls reached batch size 36,
+gradient-bearing calls reached 19, and the two Hessian-bearing calls reached 4;
+the respective next batch sizes ran out of GPU memory. These are measurements,
+not fixed API limits: memory use depends on the topology, problem dimensions,
+frequency count, requested outputs, and submission code. Test the exact path
+and batch size used by your algorithm against the official resource limits.
+
 ---
 
 ## Time budget

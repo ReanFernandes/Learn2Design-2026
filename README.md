@@ -48,7 +48,21 @@ Algorithms will be ranked by their hidden-evaluation performance, with **EUR 25,
 Beyond gravitational-wave detection, Learn2Design-2026 asks a broader scientific question:
 **Can AI systems discover scientific instruments that go beyond human intuition while remaining physically meaningful and experimentally constrained?**
 
-More information is available in the accepted proposal for [Learn2Design-2026](Learn2Design_details.pdf). Its original hardware figures are historical and are superseded by the [current evaluation specification](docs/submission.md#evaluation-hardware).
+More information is available in the accepted proposal for [Learn2Design-2026](Learn2Design_details.pdf).
+
+## Round 1 leaderboard
+
+Round 1 evaluated 43 participant submissions on the same ten hidden UIFO
+topologies. The figure compares their mean best feasible loss (lower is better)
+with the seven organizer baselines; error bars show one standard error of the
+mean across the ten runs.
+
+<p align="left">
+  <img src="media/round1_leaderboard.png" alt="Learn2Design 2026 Round 1 leaderboard with participant and organizer-baseline scores" width="720">
+</p>
+
+Exact per-run results, convergence checkpoints, efficiency statistics, and
+participant reports are available in the [Round 1 evaluation data](competition_data/round1/).
 
 ## Prize money
 
@@ -346,9 +360,14 @@ dataset/
 
 ## Baselines
 
-In the plots below, we provide comparisons between baselines from different classes of algorithms.
+The plot shows the mean raw best-so-far loss and its SEM over the four-hour
+budget for the seven organizer baselines rerun under the standardized Round 1
+evaluation procedure. The table reports the corresponding official mean best
+feasible loss used for scoring.
 
-![Baseline category overview](media/category_algorithms_loss_mean_sem.png)
+<p align="left">
+  <img src="media/round1_baseline_loss_histories.png" alt="Round 1 organizer baseline loss histories" width="720">
+</p>
 
 The table below summarizes the example baselines included in [`learn2design/example_algorithms`](learn2design/example_algorithms).
 
@@ -358,9 +377,10 @@ The table below summarizes the example baselines included in [`learn2design/exam
 Rows are ordered by displayed mean loss; ties in the rounded values are broken
 by displayed SEM and then alphabetically.
 
-**Benchmark hardware for all results below:** 1× NVIDIA A100 GPU (40 GB VRAM),
-AMD EPYC 7302 CPU, and 50 GB RAM. This is the original baseline setup, not the
-[current H100 evaluation VM](docs/submission.md#evaluation-hardware).
+**Benchmark setup for all results below:** four hours per topology on the same
+ten Round 1 topologies, using 1× NVIDIA H100 SXM5 GPU (80 GB HBM3), 16 vCPUs,
+and 128 GiB RAM per run. All baselines use the same evaluation, logging, and
+physical-feasibility checks as participant submissions.
 
 Because this repository depends on `dfbench` as an external package, it does
 not contain the `dfbench` source tree itself. The links below therefore open
@@ -371,13 +391,13 @@ A loss of zero means that the optimizer has discovered the best known human desi
 
 | Rank & name | General type* | Detailed implementation | Average loss ± SEM | Link to example |
 |---|---|---|---|---|
-| 1. `AdamGD` | Gradient-based | Standard Adam optimizer utilizing gradient clipping for stability | 1.1 ± 0.3 | [AdamGD](learn2design/example_algorithms/adam_gd.py) |
-| 2. `NAAdamGD` | Gradient-based | Adam optimizer enhanced with decaying Gaussian noise to escape local optima | 1.2 ± 0.4 | [NAAdamGD](learn2design/example_algorithms/na_adam_gd.py) |
-| 3. `OptaxSGDM` | Gradient-based | Stochastic Gradient Descent (SGD) with momentum, implemented via Optax | 1.2 ± 0.4 | [OptaxSGDM](learn2design/example_algorithms/optax_sgdm.py) |
-| 4. `BFGS` | Gradient-based | BFGS quasi-Newton method (SciPy) for gradient-based optimization | 1.8 ± 0.2 | [BFGS](learn2design/example_algorithms/scipy_bfgs.py) |
-| 5. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.9 ± 0.2 | [LBFGSGD](learn2design/example_algorithms/lbfgs_gd.py) |
-| 6. `PyCMACMAES` | Evolutionary | Vanilla CMA-ES (pycma) searching in the unit cube, mapped to physical bounds at evaluation | 4.1 ± 0.1 | [PyCMACMAES](learn2design/example_algorithms/pycma_cmaes.py) |
-| 7. `RandomSearch` | Global Search | Uniform random sampling baseline evaluated in batches within bounds | 4.8 ± 0.03 | [RandomSearch](learn2design/example_algorithms/random_search.py) |
+| 1. `NAAdamGD` | Gradient-based | Adam optimizer enhanced with decaying Gaussian noise to escape local optima | 0.504 ± 0.091 | [NAAdamGD](learn2design/example_algorithms/na_adam_gd.py) |
+| 2. `OptaxSGDM` | Gradient-based | Stochastic Gradient Descent (SGD) with momentum, implemented via Optax | 0.540 ± 0.054 | [OptaxSGDM](learn2design/example_algorithms/optax_sgdm.py) |
+| 3. `AdamGD` | Gradient-based | Standard Adam optimizer utilizing gradient clipping for stability | 0.639 ± 0.124 | [AdamGD](learn2design/example_algorithms/adam_gd.py) |
+| 4. `BFGS` | Gradient-based | BFGS quasi-Newton method (SciPy) for gradient-based optimization | 1.777 ± 0.089 | [BFGS](learn2design/example_algorithms/scipy_bfgs.py) |
+| 5. `LBFGSGD` | Gradient-based | Limited-memory BFGS (Optax) featuring a custom JIT-compiled logging loop | 2.918 ± 0.140 | [LBFGSGD](learn2design/example_algorithms/lbfgs_gd.py) |
+| 6. `PyCMACMAES` | Evolutionary | Vanilla CMA-ES (pycma) searching in the unit cube, mapped to physical bounds at evaluation | 3.554 ± 0.242 | [PyCMACMAES](learn2design/example_algorithms/pycma_cmaes.py) |
+| 7. `RandomSearch` | Global Search | Uniform random sampling baseline evaluated in batches within bounds | 4.749 ± 0.038 | [RandomSearch](learn2design/example_algorithms/random_search.py) |
 
 
 *General types follow `dfbench`'s coarse `AlgorithmType` system:
