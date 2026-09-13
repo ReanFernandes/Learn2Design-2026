@@ -6,10 +6,8 @@
 [![Static Badge](https://img.shields.io/badge/Codabench-Submit-4CB2AD)](https://submit.learn2design2026.com/competitions/4/)
 
 > [!IMPORTANT]
-> **Detailed Round 1 evaluation data is now available.** The new
-> [Round 1 data release](competition_data/round1/) contains outcome statistics
-> for every evaluated participant, including all ten run scores, uncertainty,
-> convergence checkpoints, efficiency, and feasibility statistics.
+> **Round 2 is now complete, with 60 submissions received.** Thank you to all participants for taking part!
+> Evaluation of all submissions is now underway, and the updated leaderboard will be published on September 21.
 
 ## A physics experiment design competition for gravitational-wave detectors
 
