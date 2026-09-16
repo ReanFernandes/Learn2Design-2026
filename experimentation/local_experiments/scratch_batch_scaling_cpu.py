@@ -12,7 +12,7 @@ for batch_size in [1, 2, 4, 8, 16, 32]:
         batch_size, -1
     )
 
-    objective.warmup_vmap_value_and_grad()
+    objective.warmup_vmap_value_and_grad(batch_size=batch_size)
     objective.start_logging()
 
     t0 = time.time()
