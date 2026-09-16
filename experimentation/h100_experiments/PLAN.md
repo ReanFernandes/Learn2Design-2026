@@ -31,6 +31,26 @@ the documented chart (`media/uifo_batch_scaling_all_operations.png`) —
 confirms whether batch~15-19 is really the cheap sweet spot on *your*
 specific GPU/driver setup before designing around it.
 
+**Result (A100-SXM4 40GB, ml2ran08, 2026-09-16):** Confirmed sub-linear
+batch cost, no saturation yet at batch=32 — worth checking wider before
+picking a width for Phase 3.
+
+```
+batch=  1 | per_call=  43.7ms | per_candidate= 43.70ms | candidates/sec=  22.9
+batch=  2 | per_call=  63.4ms | per_candidate= 31.69ms | candidates/sec=  31.6
+batch=  4 | per_call=  72.1ms | per_candidate= 18.02ms | candidates/sec=  55.5
+batch=  8 | per_call=  84.2ms | per_candidate= 10.52ms | candidates/sec=  95.0
+batch= 16 | per_call= 111.4ms | per_candidate=  6.96ms | candidates/sec= 143.6
+batch= 32 | per_call= 161.9ms | per_candidate=  5.06ms | candidates/sec= 197.6
+```
+
+Note: the first attempt at this produced garbage (non-monotonic, batch=2
+a 200x outlier) — root cause was `warmup_vmap_value_and_grad()` defaulting
+to `batch_size=2` in dfbench regardless of the batch actually being timed,
+so every batch size except 2 was paying a fresh JIT-compile cost inside
+the timed loop. Fixed in `scratch_batch_scaling_cpu.py` by passing
+`batch_size=batch_size` explicitly to the warmup call.
+
 ## Phase 2 — Correctness re-check on GPU
 
 Same smoke test we ran locally, just to confirm the restart logic behaves
