@@ -31,25 +31,55 @@ the documented chart (`media/uifo_batch_scaling_all_operations.png`) —
 confirms whether batch~15-19 is really the cheap sweet spot on *your*
 specific GPU/driver setup before designing around it.
 
-**Result (A100-SXM4 40GB, ml2ran08, 2026-09-16):** Confirmed sub-linear
-batch cost, no saturation yet at batch=32 — worth checking wider before
-picking a width for Phase 3.
+**Result (A100-SXM4 40GB, 2026-09-16/17), extended sweep, both problems:**
+
+`ConstrainedVoyagerProblem` — saturates far higher than expected, OOMs at
+batch=256 (needs 36.7GB), but diminishing returns kick in well before that:
 
 ```
-batch=  1 | per_call=  43.7ms | per_candidate= 43.70ms | candidates/sec=  22.9
-batch=  2 | per_call=  63.4ms | per_candidate= 31.69ms | candidates/sec=  31.6
-batch=  4 | per_call=  72.1ms | per_candidate= 18.02ms | candidates/sec=  55.5
-batch=  8 | per_call=  84.2ms | per_candidate= 10.52ms | candidates/sec=  95.0
-batch= 16 | per_call= 111.4ms | per_candidate=  6.96ms | candidates/sec= 143.6
-batch= 32 | per_call= 161.9ms | per_candidate=  5.06ms | candidates/sec= 197.6
+batch=  1 | candidates/sec=  21.7
+batch=  2 | candidates/sec=  30.4
+batch=  4 | candidates/sec=  55.8
+batch=  8 | candidates/sec=  94.2
+batch= 16 | candidates/sec= 142.3
+batch= 32 | candidates/sec= 196.6
+batch= 64 | candidates/sec= 229.8   (32->64: 2x batch, only 1.17x throughput)
+batch=128 | candidates/sec= 260.4   (64->128: 2x batch, only 1.13x throughput)
+batch=256 | OOM (needs 36.71GiB)
 ```
 
-Note: the first attempt at this produced garbage (non-monotonic, batch=2
-a 200x outlier) — root cause was `warmup_vmap_value_and_grad()` defaulting
-to `batch_size=2` in dfbench regardless of the batch actually being timed,
-so every batch size except 2 was paying a fresh JIT-compile cost inside
-the timed loop. Fixed in `scratch_batch_scaling_cpu.py` by passing
-`batch_size=batch_size` explicitly to the warmup call.
+`UIFOProblem(size=3)` — the real target problem — OOMs far earlier, at
+batch=16 (needs 48GB):
+
+```
+batch=  1 | candidates/sec=  4.3
+batch=  2 | candidates/sec=  6.4
+batch=  4 | candidates/sec=  7.2
+batch=  8 | candidates/sec=  7.8
+batch= 16 | OOM (needs 48GB)
+```
+
+**Conclusion**: the documented H100 chart (`media/uifo_batch_scaling_all_
+operations.png`) benchmarks UIFO, not Voyager — confirmed these are not
+comparable. Voyager's throughput ceiling (~260/s) is ~33x UIFO's (~7.8/s),
+and its usable batch range (up to 128) is ~16x UIFO's (up to 8). Nothing
+tuned on Voyager (batch width, and probably learning rate/patience/restart
+behavior too) should be assumed to transfer to UIFO. **Phase 3+'s batch-
+width sweep should target UIFO directly, in the 1-8 range** — Voyager's
+range is irrelevant to it. Voyager is kept only for Phase 2's cheap
+crash/correctness check, not for tuning decisions.
+
+Two bugs hit and fixed along the way, worth remembering:
+- `warmup_vmap_value_and_grad()` defaults to `batch_size=2` in dfbench
+  regardless of the batch actually being timed, so every batch size
+  except 2 paid a fresh JIT-compile cost inside the timed loop, producing
+  a garbage non-monotonic curve with batch=2 as a 200x outlier. Fixed by
+  passing `batch_size=batch_size` explicitly to the warmup call.
+- `git pull origin main 2>&1 | tail -5 && ...` gates on `tail`'s exit
+  code, not `git pull`'s — a failed pull (e.g. from two concurrent jobs
+  racing on the same shared `/cephfs` checkout) silently fell through to
+  running whatever stale script was already on disk, with no error. Fixed
+  by adding `set -o pipefail` before the pipeline in the job command.
 
 ## Phase 2 — Correctness re-check on GPU
 
