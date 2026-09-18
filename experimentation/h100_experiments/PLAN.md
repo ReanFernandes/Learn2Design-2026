@@ -99,23 +99,25 @@ print(obj.eval_count, obj.best_loss, obj.best_is_feasible)
 
 ## Phase 3 — Batch-width sweep, short-medium budget (fast iteration)
 
-This is where the real decision happens — Phase 1's numbers tell you the
-*cost* of each batch width; this tells you the *payoff*. Sweep `n_starts`
-across a range informed by Phase 1 (e.g. 1, 4, 8, 16, 24, 32), fixed
-`patience`, on `ConstrainedVoyagerProblem`, budget ~5-10 min each, a few
-seeds. Compare best-feasible-loss and time-to-best. This replaces the
-CPU-only sweep from tonight (`local_experiments/02_multistart_adamgd_voyager.md`)
-— expect a different (likely more favorable to batching) result here.
+**Revised after Phase 1**: sweep directly on `UIFOProblem(size=3)`, not
+Voyager — Phase 1 showed Voyager's usable batch range (up to 128) and
+Voyager-tuned choices don't transfer to UIFO, which OOMs at batch=16.
+Sweep `n_starts` in **1, 2, 4, 8** (the actual usable range on a 40GB
+A100), fixed `patience`, a few topology seeds, budget ~5-10 min each.
+Compare best-feasible-loss and time-to-best. This also subsumes what was
+originally planned as a separate Phase 5 Voyager->UIFO transfer check —
+since we're on UIFO from the start now, there's nothing to transfer.
 
 ## Phase 4 — Patience/perturbation sweep
 
 Fix the best `n_starts` from Phase 3, sweep `patience` (how long to wait
-before restarting) and `perturbation_scale`. Same budget scale as Phase 3.
+before restarting) and `perturbation_scale`. Same budget scale as Phase 3,
+same problem (`UIFOProblem`).
 
-## Phase 5 — Validate on real UIFOProblem, multiple topology seeds
+## Phase 5 — Multi-seed validation
 
-Voyager is a proxy — confirm the winning config from Phases 3-4 actually
-transfers:
+Confirm the winning config from Phases 3-4 holds across topology seeds,
+not just the one used for tuning:
 
 ```python
 from dfbench.problems import UIFOProblem

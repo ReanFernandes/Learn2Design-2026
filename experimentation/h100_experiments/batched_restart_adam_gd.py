@@ -87,7 +87,7 @@ class BatchedRestartAdamGD(OptimizationAlgorithm):
         steps_since_improvement = jnp.zeros((n_starts,), dtype=jnp.int32)
         restart_count = jnp.zeros((n_starts,), dtype=jnp.int32)
 
-        obj.warmup_vmap_value_and_grad()
+        obj.warmup_vmap_value_and_grad(batch_size=n_starts)
         obj.start_logging()
 
         while not obj.budget_exceeded:
