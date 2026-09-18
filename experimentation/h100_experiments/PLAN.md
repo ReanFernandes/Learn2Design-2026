@@ -97,6 +97,30 @@ algo.optimize(obj, random_seed=1, n_starts=16, patience=200)
 print(obj.eval_count, obj.best_loss, obj.best_is_feasible)
 ```
 
+**Result (A100, 2026-09-18):** Clean — no crash, no NaN.
+
+```
+eval_count=6384
+best_loss=2.87669753585832
+best_is_feasible=True
+```
+
+Better than the CPU/HPO best (3.423) in a 30s budget, though this is a
+correctness check on Voyager, not a Phase 3-grade payoff comparison.
+
+Found and fixed the same warmup bug here too:
+`warmup_vmap_value_and_grad()` (no arg) defaulted to `batch_size=2`
+regardless of `n_starts` — lower-impact than in the calibration script
+(one wasted compile at run start, not per timed call, since the shape is
+constant for the rest of the run) but still wrong. Fixed by passing
+`batch_size=n_starts`.
+
+Also hit `ModuleNotFoundError: No module named 'experimentation'` running
+the script by file path (`python foo/bar.py` puts `foo/bar`'s own dir on
+`sys.path`, not the repo root) — fixed by invoking as a module instead
+(`python -m experimentation.h100_experiments.phase2_correctness_check`,
+run from the repo root).
+
 ## Phase 3 — Batch-width sweep, short-medium budget (fast iteration)
 
 **Revised after Phase 1**: sweep directly on `UIFOProblem(size=3)`, not
